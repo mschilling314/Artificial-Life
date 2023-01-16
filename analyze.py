@@ -13,7 +13,9 @@ import time
 # print(frontLegSensorValues)
 # plot.plot(frontLegSensorValues, label="Front")
 # plot.legend()
-sinusoid = np.load("data/sinusoid.npy")
+sinusoid = np.load("data/sinusoid1.npy")
+s = np.load("data/sinusoid2.npy")
 plot.plot(sinusoid)
+plot.plot(s)
 
 plot.show()
