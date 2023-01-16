@@ -14,14 +14,12 @@ class SIMULATION:
         p.setGravity(0, 0, c.g)
         self.world = WORLD()
         self.robot = ROBOT()
-        pyrosim.pyrosim.Prepare_To_Simulate(self.robot.robotID)
         
 
     def Run(self):
         for i in range(c.iter):
             p.stepSimulation()
-            # backLegSensorValues[i] = pyrosim.Get_Touch_Sensor_Value_For_Link("Backleg")
-            # frontLegSensorValues[i] = pyrosim.Get_Touch_Sensor_Value_For_Link("Frontleg")
+            self.robot.Sense(i)
             # tP1 = r.random() * pi - pi/2
             # tP2 = r.random() * pi - pi/2
             # maxForce = 50

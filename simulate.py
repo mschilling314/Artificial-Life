@@ -16,10 +16,6 @@ pass
 
 # pi = np.pi
 
-
-# 
-# backLegSensorValues = np.zeros(c.iter)
-# frontLegSensorValues = np.zeros(c.iter)
 # x = np.linspace(0, 2*pi, c.iter)
 # targetAnglesBL = c.amplitudeBL * np.sin(c.frequencyBL * x + c.phaseOffsetBL)
 # targetAnglesFL= c.amplitudeFL * np.sin(c.frequencyFL * x + c.phaseOffsetFL)
