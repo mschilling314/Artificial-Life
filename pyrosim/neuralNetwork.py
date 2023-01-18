@@ -29,6 +29,18 @@ class NEURAL_NETWORK:
         print("")
 
 
+    def Get_Neuron_Names(self):
+        return self.neurons.keys()
+
+
+    def Is_Motor_Neuron(self, neuronName):
+        return self.neurons[neuronName].Is_Motor_Neuron()
+
+    
+    def Get_Motor_Neurons_Joint(self, neuronName):
+        return self.neurons[neuronName].Get_Joint_Name()
+
+
     def Update(self):
         for k in self.neurons.keys():
             if self.neurons[k].Is_Sensor_Neuron():
