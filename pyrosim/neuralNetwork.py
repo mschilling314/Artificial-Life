@@ -41,6 +41,10 @@ class NEURAL_NETWORK:
         return self.neurons[neuronName].Get_Joint_Name()
 
 
+    def Get_Value_Of(self, neuronName):
+        return self.neurons[neuronName].Get_Value()
+
+
     def Update(self):
         for k in self.neurons.keys():
             if self.neurons[k].Is_Sensor_Neuron():
