@@ -3,8 +3,9 @@ from simulation import SIMULATION
 
 
 
-generate
+# generate
 
-simulation = SIMULATION()
-simulation.Run()
-pass
+def Simulate():
+    simulation = SIMULATION()
+    simulation.Run()
+

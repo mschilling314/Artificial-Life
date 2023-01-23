@@ -1,7 +1,7 @@
 import numpy as np
 pi = np.pi
 
-iter = 2000
+iter = 50
 amplitude = pi/4
 frequency = 10
 phaseOffset = 0
