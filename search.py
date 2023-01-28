@@ -5,6 +5,7 @@ import hillclimber
 
 def run_sim():
     hc = hillclimber.HILL_CLIMBER()
+    hc.Evolve()
     # generate.Generate()
     # simulate.Simulate()
 
