@@ -10,6 +10,6 @@ def run_sim():
     # simulate.Simulate()
 
 
-for i in range(5):
+for i in range(1):
     run_sim()
     

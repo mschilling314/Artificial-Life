@@ -1,5 +1,6 @@
 import numpy as np
 import pyrosim.pyrosim as pyrosim
+import simulate
 
 
 class SOLUTION:
@@ -12,6 +13,7 @@ class SOLUTION:
         self.Create_World()
         self.Create_Body()
         self.Create_Brain()
+        simulate.Simulate()
 
 
     def sendCube(self, nomen, x=0, y=0, side=1, zoff = 0):
