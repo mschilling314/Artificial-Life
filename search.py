@@ -1,10 +1,12 @@
 import generate
 import simulate
+import hillclimber
 
 
 def run_sim():
-    generate.Generate()
-    simulate.Simulate()
+    hc = hillclimber.HILL_CLIMBER()
+    # generate.Generate()
+    # simulate.Simulate()
 
 
 for i in range(5):
