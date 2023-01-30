@@ -14,6 +14,9 @@ class SOLUTION:
         self.Create_Body()
         self.Create_Brain()
         simulate.Simulate()
+        fitnessFile = open("fitness.txt", "r")
+        fitness = float(fitnessFile.read())
+        fitnessFile.close()
 
 
     def sendCube(self, nomen, x=0, y=0, side=1, zoff = 0):
