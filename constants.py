@@ -1,8 +1,8 @@
 import numpy as np
 pi = np.pi
 
-iter = 50
-numberOfGenerations = 2
+iter = 500
+numberOfGenerations = 100
 amplitude = pi/4
 frequency = 10
 phaseOffset = 0
@@ -10,5 +10,5 @@ maxForce = 50
 # amplitudeFL = pi/4
 # frequencyFL = 10
 # phaseOffsetFL = pi/4
-sleepFreq = 1/60
+sleepFreq = 1/600
 g = -9.8

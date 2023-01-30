@@ -8,8 +8,15 @@ import time
 
 
 class SIMULATION:
-    def __init__(self) -> None:
-        self.physicsClient = p.connect(p.GUI)
+    def __init__(self, pretty="DIRECT") -> None:
+        self.pretty = pretty
+        if pretty == "DIRECT":
+            self.physicsClient = p.connect(p.DIRECT)
+        elif pretty == "GUI":
+            self.physicsClient = p.connect(p.GUI)
+        else:
+            print("You gave an invalid input to the SIMULATION constructor.")
+            exit()
         p.setAdditionalSearchPath(pybullet_data.getDataPath())
         p.setGravity(0, 0, c.g)
         self.world = WORLD()
@@ -22,7 +29,8 @@ class SIMULATION:
             self.robot.Sense(i)
             self.robot.Think()
             self.robot.Act(i)
-            time.sleep(c.sleepFreq)
+            if self.pretty == "GUI":
+                time.sleep(c.sleepFreq)
 
     
     def __del__(self):

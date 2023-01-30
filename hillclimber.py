@@ -14,11 +14,20 @@ class HILL_CLIMBER:
             self.Spawn()
             self.Mutate()
             self.child.Evaluate()
+            self.Print()
             self.Select()
+
+
+    def Print(self):
+        print("\nP: ", self.parent.fitness, " C: ", self.child.fitness, "\n")
 
 
     def Spawn(self):
         self.child = copy.deepcopy(self.parent)
+
+
+    def Show_Best(self):
+        self.parent.Evaluate(show="GUI")
 
 
     def Mutate(self):
