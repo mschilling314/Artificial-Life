@@ -9,7 +9,7 @@ import time
 
 class SIMULATION:
     def __init__(self, pretty="DIRECT") -> None:
-        self.pretty = pretty
+        self.directOrGui = pretty
         if pretty == "DIRECT":
             self.physicsClient = p.connect(p.DIRECT)
         elif pretty == "GUI":
@@ -29,7 +29,7 @@ class SIMULATION:
             self.robot.Sense(i)
             self.robot.Think()
             self.robot.Act(i)
-            if self.pretty == "GUI":
+            if self.directOrGui == "GUI":
                 time.sleep(c.sleepFreq)
 
     
