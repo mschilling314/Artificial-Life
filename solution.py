@@ -1,3 +1,4 @@
+import random
 import numpy as np
 import pyrosim.pyrosim as pyrosim
 import simulate
@@ -15,7 +16,7 @@ class SOLUTION:
         self.Create_Brain()
         simulate.Simulate()
         fitnessFile = open("fitness.txt", "r")
-        fitness = float(fitnessFile.read())
+        self.fitness = float(fitnessFile.read())
         fitnessFile.close()
 
 
@@ -53,3 +54,10 @@ class SOLUTION:
                 motor = currentColumn + self.weights.shape[0]
                 pyrosim.Send_Synapse(sourceNeuronName=sensor, targetNeuronName=motor, weight=self.weights[currentRow][currentColumn])
         pyrosim.End()
+
+
+    def Mutate(self):
+        rowMutated = random.randint(0, self.weights.shape[0]-1)
+        columnMutated = random.randint(0, self.weights.shape[1]-1)
+        self.weights[rowMutated, columnMutated] = random.random() * 2 - 1
+
