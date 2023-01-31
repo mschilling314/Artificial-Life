@@ -31,13 +31,13 @@ class SOLUTION:
         fitnessFile.close()
 
 
-    def Start_Simulation(self, processes, show="DIRECT"):
-        self.Create_World()
-        self.Create_Body()
+    def Start_Simulation(self, show="DIRECT"):
+        if self.myID == 0:
+            self.Create_World()
+            self.Create_Body()
         self.Create_Brain()
         p = multiprocessing.Process(target=simulate.Simulate, args=[show, self.myID])
         p.start()
-        processes.append(p)
 
 
     def Wait_For_Simulation_To_End(self):
@@ -46,10 +46,8 @@ class SOLUTION:
             time.sleep(0.01)
         fitnessFile = open(fitnessFileName, "r")
         self.fitness = float(fitnessFile.read())
-        # print("\n\nFitness of ", str(self.myID), ": ", self.fitness, "\n\n")
         fitnessFile.close()
         cmd = "del fitness" + str(self.myID) + ".txt"
-        # print("\n\n\n", self.myID, "\n\n\n")
         os.system(cmd)
 
 
