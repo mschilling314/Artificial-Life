@@ -1,18 +1,27 @@
 import solution
 import constants as c
 import copy
+import multiprocessing
 
 
 class PARALLEL_HILL_CLIMBER:
     def __init__(self) -> None:
         self.parents = dict()
+        self.nextAvailableID = 0
         for i in range(c.populationSize):
-            self.parents[i] = solution.SOLUTION()
+            self.parents[i] = solution.SOLUTION(self.nextAvailableID)
+            self.nextAvailableID += 1
 
 
     def Evolve(self):
+        processes = []
         for parent in self.parents.values():
-            parent.Evaluate(show="GUI")
+            parent.Start_Simulation(processes, show="GUI")
+        for parent in self.parents.values():
+            parent.Wait_For_Simulation_To_End()
+            print(parent.fitness)
+        # for p in processes:
+        #     p.join()
         # self.parent.Evaluate()
         # for currentGeneration in range(c.numberOfGenerations):
         #     self.Spawn()
@@ -28,6 +37,8 @@ class PARALLEL_HILL_CLIMBER:
 
     def Spawn(self):
         self.child = copy.deepcopy(self.parent)
+        self.child.Set_ID(self.nextAvailableID)
+        self.nextAvailableID += 1
 
 
     def Show_Best(self):

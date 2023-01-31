@@ -1,7 +1,7 @@
 import numpy as np
 pi = np.pi
 
-iter = 500
+iter = 400
 numberOfGenerations = 100
 amplitude = pi/4
 frequency = 10

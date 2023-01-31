@@ -1,23 +1,56 @@
+import os
 import random
+import time
 import numpy as np
 import pyrosim.pyrosim as pyrosim
 import simulate
+import multiprocessing
 
 
 class SOLUTION:
-    def __init__(self) -> None:
+    def __init__(self, nextAvailableID) -> None:
         self.weights = np.random.rand(3, 2)
         self.weights = 2 * self.weights - 1
+        self.myID = nextAvailableID
 
 
-    def Evaluate(self, show="DIRECT"):
+    def Evaluate(self, processes, show="DIRECT"):
         self.Create_World()
         self.Create_Body()
         self.Create_Brain()
-        simulate.Simulate(gui=show)
-        fitnessFile = open("fitness.txt", "r")
+        p = multiprocessing.Process(target=simulate.Simulate, args=[show, self.myID])
+        p.start()
+        processes.append(p)
+        #simulate.Simulate(gui=show)
+        fitnessFileName = "fitness"+ str(self.myID) +".txt"
+        while not os.path.exists(fitnessFileName):
+            time.sleep(0.01)
+        fitnessFile = open(fitnessFileName, "r")
         self.fitness = float(fitnessFile.read())
+        print(self.fitness)
         fitnessFile.close()
+
+
+    def Start_Simulation(self, processes, show="DIRECT"):
+        self.Create_World()
+        self.Create_Body()
+        self.Create_Brain()
+        p = multiprocessing.Process(target=simulate.Simulate, args=[show, self.myID])
+        p.start()
+        processes.append(p)
+
+
+    def Wait_For_Simulation_To_End(self):
+        fitnessFileName = "fitness"+ str(self.myID) +".txt"
+        while not os.path.exists(fitnessFileName):
+            time.sleep(0.01)
+        fitnessFile = open(fitnessFileName, "r")
+        self.fitness = float(fitnessFile.read())
+        # print("\n\nFitness of ", str(self.myID), ": ", self.fitness, "\n\n")
+        fitnessFile.close()
+        cmd = "del fitness" + str(self.myID) + ".txt"
+        # print("\n\n\n", self.myID, "\n\n\n")
+        os.system(cmd)
 
 
     def sendCube(self, nomen, x=0, y=0, side=1, zoff = 0):
@@ -42,7 +75,7 @@ class SOLUTION:
 
 
     def Create_Brain(self):
-        pyrosim.Start_NeuralNetwork("brain.nndf")
+        pyrosim.Start_NeuralNetwork("brain" + str(self.myID) + ".nndf")
         pyrosim.Send_Sensor_Neuron(name = 0, linkName= "Torso")
         pyrosim.Send_Sensor_Neuron(name = 1, linkName= "Backleg")
         pyrosim.Send_Sensor_Neuron(name = 2, linkName= "Frontleg")
@@ -60,4 +93,8 @@ class SOLUTION:
         rowMutated = random.randint(0, self.weights.shape[0]-1)
         columnMutated = random.randint(0, self.weights.shape[1]-1)
         self.weights[rowMutated, columnMutated] = random.random() * 2 - 1
+
+
+    def Set_ID(self, nextAvailableID):
+        self.myID = nextAvailableID
 
