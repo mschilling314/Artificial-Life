@@ -12,3 +12,4 @@ maxForce = 50
 # phaseOffsetFL = pi/4
 sleepFreq = 1/600
 g = -9.8
+populationSize = 2

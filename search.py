@@ -1,17 +1,15 @@
 import generate
 import simulate
-import hillclimber
+import parallelHillClimber
 
 
 def run_sim():
-    hc = hillclimber.HILL_CLIMBER()
-    hc.Show_Best()
-    hc.Evolve()
-    hc.Show_Best()
-    # generate.Generate()
-    # simulate.Simulate()
+    phc = parallelHillClimber.PARALLEL_HILL_CLIMBER()
+    phc.Show_Best()
+    phc.Evolve()
+    phc.Show_Best()
 
 
-for i in range(1):
+if __name__ == "__main__":
     run_sim()
     
