@@ -75,5 +75,5 @@ class PARALLEL_HILL_CLIMBER:
         for key in self.parents.keys():
             parent = self.parents[key]
             child = self.children[key]
-            if parent.fitness > child.fitness:
+            if parent.fitness < child.fitness:
                 self.parents[key] = child

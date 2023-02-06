@@ -1,7 +1,7 @@
 import numpy as np
 pi = np.pi
 
-iter = 1000
+iter = 2000
 amplitude = pi/4
 frequency = 10
 phaseOffset = 0
@@ -11,9 +11,13 @@ maxForce = 50
 # phaseOffsetFL = pi/4
 sleepFreq = 1/600
 g = -9.8
-populationSize = 10
-numberOfGenerations = 10
+populationSize = 1
+numberOfGenerations = 1
 
-numSensorNeurons = 9
-numMotorNeurons = 8
-motorJointRange = 0.2
+numSensorNeurons = 11
+numHiddenNeurons = 5
+numMotorNeurons = 10
+
+motorJointRange = 0.5
+
+height = 5.2

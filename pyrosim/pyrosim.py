@@ -211,6 +211,11 @@ def Start_SDF(filename):
 
     links = []
 
+
+def Send_Hidden_Neuron(name):
+    f.write('    <neuron name = "' + str(name) + '" type = "hidden" />\n')
+
+
 def Start_URDF(filename):
 
     global availableLinkIndex
