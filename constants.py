@@ -11,8 +11,8 @@ maxForce = 50
 # phaseOffsetFL = pi/4
 sleepFreq = 1/600
 g = -9.8
-populationSize = 1
-numberOfGenerations = 1
+populationSize = 10
+numberOfGenerations = 100
 
 numSensorNeurons = 11
 numHiddenNeurons = 5
