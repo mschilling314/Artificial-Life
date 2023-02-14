@@ -35,6 +35,7 @@ class ROBOT:
 
 
     def Sense(self, i):
+        # print("\nThe self.sensors is: ", self.sensors.keys())
         for sensor in self.sensors.values():
             sensor.Get_Value(i)
 

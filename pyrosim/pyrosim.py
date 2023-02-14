@@ -45,7 +45,8 @@ def End_Model():
 def Get_Touch_Sensor_Value_For_Link(linkName):
 
     touchValue = -1.0
-
+    # print("\nKey error about to occur for: ", linkName)
+    # print("The valid keys are: ", linkNamesToIndices.keys(), "\n")
     desiredLinkIndex = linkNamesToIndices[linkName]
 
     pts = p.getContactPoints()
@@ -106,7 +107,7 @@ def Prepare_To_Simulate(bodyID):
 
     Prepare_Joint_Dictionary(bodyID)
 
-def Send_Cube(name="default",pos=[0,0,0],size=[1,1,1]):
+def Send_Cube(name="default",pos=[0,0,0],size=[1,1,1], colorString='<color rgba="0 0 1 1"/>', color='Blue'):
 
     global availableLinkIndex
 
@@ -120,7 +121,7 @@ def Send_Cube(name="default",pos=[0,0,0],size=[1,1,1]):
 
         links.append(link)
     else:
-        link = LINK_URDF(name,pos,size)
+        link = LINK_URDF(name,pos,size, cS=colorString, col=color)
 
         links.append(link)
 

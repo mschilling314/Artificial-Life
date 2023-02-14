@@ -38,7 +38,7 @@ class PARALLEL_HILL_CLIMBER:
 
     def Evaluate(self, solutions):
         for solution in solutions.values():
-            solution.Start_Simulation(show="DIRECT")
+            solution.Start_Simulation(show="GUI")
         for solution in solutions.values():
             solution.Wait_For_Simulation_To_End()
 
@@ -72,9 +72,9 @@ class PARALLEL_HILL_CLIMBER:
             child.Mutate()
 
     def Select(self):
-        # this statement is what it is bc fitness is the x-coord which we want more positive
+        # this statement is what it is bc fitness is the x-coord which we want more negative
         for key in self.parents.keys():
             parent = self.parents[key]
             child = self.children[key]
-            if parent.fitness < child.fitness:
+            if parent.fitness > child.fitness:
                 self.parents[key] = child

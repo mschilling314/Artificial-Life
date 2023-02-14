@@ -19,6 +19,8 @@ class SOLUTION:
     def Start_Simulation(self, show="DIRECT"):
         if self.myID == 0:
             self.Create_World()
+        self.links = []
+        self.joints = []
         self.Create_Body()
         self.Create_Brain()
         p = multiprocessing.Process(target=simulate.Simulate, args=[self.links, show, self.myID])
@@ -48,9 +50,10 @@ class SOLUTION:
 
     def Create_Body(self):
         pyrosim.Start_URDF("body" + str(self.myID) + ".urdf")
-        rL = random.randint(-1, 1)
-        self.Node(recursiveLimit= 3+rL, posi=[0, 0, 1], sizzle=[2, 3, 1], firstIter=True)
+        rL = random.randint(1, 10)
+        self.Node(recursiveLimit=rL, posi=[0, 0, .1], sizzle=[.2, .3, .1], firstIter=True)
         pyrosim.End()
+        # print("\n\n\nThe link names are: ", self.links)
         self.weightsToHidden = np.random.rand(len(self.links), c.numHiddenNeurons)
         self.weightsToHidden = 2 * self.weightsToHidden - 1
         self.weightsToMotor = np.random.rand(c.numHiddenNeurons, len(self.joints))
@@ -86,6 +89,8 @@ class SOLUTION:
 
 
     def Mutate(self):
+        if len(self.links) == 0:
+            return
         rowMutated = random.randint(0, len(self.links)-1)
         columnMutated = random.randint(0, c.numHiddenNeurons-1)
         self.weightsToHidden[rowMutated, columnMutated] = random.random() * 2 - 1
@@ -99,10 +104,14 @@ class SOLUTION:
 
 
     def Node(self, recursiveLimit, posi, sizzle, firstIter=False):
-        pyrosim.Send_Cube(name=str(self.currentLink), pos=posi, size=sizzle)
-        existsNeuron = random.random() < 0.5
+        existsNeuron = random.random() < 0.7
+        cS = '<color rgba="0 0 1 1"/>'
+        col = 'Blue'
         if existsNeuron:
             self.links.append(str(self.currentLink))
+            cS = '<color rgba="0 1 0 1"/>'
+            col = 'Green'
+        pyrosim.Send_Cube(name=str(self.currentLink), pos=posi, size=sizzle, colorString= cS, color=col)
         if recursiveLimit > 0:
             self.Edge(sizzle, recursiveLimit-1, posi, firstIter=firstIter)
         return
@@ -116,9 +125,9 @@ class SOLUTION:
             jointPos[0] /= 2
             jointPos[2] = posi[2]
             posi[2] = 0
-        if jAxisSel < 0.5:
+        if jAxisSel < 0.33:
             jAxis = "1 0 0"
-        elif jAxisSel < 0.95:
+        elif jAxisSel < 0.66:
             jAxis = "0 1 0"
         else:
             jAxis = "0 0 1"
