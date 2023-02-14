@@ -17,6 +17,7 @@ As mentioned before, the morphologies are 1-D chains of links.  At this time, th
 <center>
 Diagram of a Possible Morphology
 </center>
+
 As you can see, the links for a chain of varying length and width, with blue links having no sensors and green links having sensors.
 
 ## Possible Brains
