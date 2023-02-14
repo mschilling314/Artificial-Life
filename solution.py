@@ -10,38 +10,18 @@ import constants as c
 
 class SOLUTION:
     def __init__(self, nextAvailableID) -> None:
-        self.weightsToHidden = np.random.rand(c.numSensorNeurons, c.numHiddenNeurons)
-        self.weightsToHidden = 2 * self.weightsToHidden - 1
-        self.weightsToMotor = np.random.rand(c.numHiddenNeurons, c.numMotorNeurons)
-        self.weightsToMotor = 2 * self.weightsToMotor - 1
         self.myID = nextAvailableID
         self.joints = []
         self.links = []
-
-
-    def Evaluate(self, processes, show="DIRECT"):
-        self.Create_World()
-        self.Create_Body()
-        self.Create_Brain()
-        p = multiprocessing.Process(target=simulate.Simulate, args=[show, self.myID])
-        p.start()
-        processes.append(p)
-        #simulate.Simulate(gui=show)
-        fitnessFileName = "fitness"+ str(self.myID) +".txt"
-        while not os.path.exists(fitnessFileName):
-            time.sleep(0.01)
-        fitnessFile = open(fitnessFileName, "r")
-        self.fitness = float(fitnessFile.read())
-        print(self.fitness)
-        fitnessFile.close()
+        self.currentLink = 0
 
 
     def Start_Simulation(self, show="DIRECT"):
         if self.myID == 0:
             self.Create_World()
-            self.Create_Body()
+        self.Create_Body()
         self.Create_Brain()
-        p = multiprocessing.Process(target=simulate.Simulate, args=[show, self.myID])
+        p = multiprocessing.Process(target=simulate.Simulate, args=[self.links, show, self.myID])
         p.start()
 
 
@@ -67,82 +47,50 @@ class SOLUTION:
 
 
     def Create_Body(self):
-        pyrosim.Start_URDF("body.urdf")
-        pyrosim.Send_Cube(name="Torso", pos=[0, 0, c.height], size=[0.5, 1, 2])
-        self.links.append("Torso")
-        #pyrosim.Send_Joint( name = "Link0_Link1" , parent= "Link0" , child = "Link1" , type = "revolute", position = [1, 0, 1])
-        pyrosim.Send_Joint( name = "Torso_Leftarm" , parent= "Torso" , child = "Leftarm" , type = "revolute", position = [0, -0.6, c.height+0.5], jointAxis = "0 1 0")
-        self.joints.append("Torso_Leftarm")
-        pyrosim.Send_Cube(name="Leftarm", pos=[0, 0, -0.5], size=[0.2, 0.2, 1])
-        self.links.append("Leftarm")
-        pyrosim.Send_Joint( name = "Torso_Rightarm" , parent= "Torso" , child = "Rightarm" , type = "revolute", position = [0, 0.6, c.height+0.5], jointAxis = "0 1 0")
-        self.joints.append("Torso_Rightarm")
-        pyrosim.Send_Cube(name="Rightarm", pos=[0, 0, -0.5], size=[0.2, 0.2, 1])
-        self.links.append("Rightarm")
-        pyrosim.Send_Joint( name = "Torso_Leftleg" , parent= "Torso" , child = "Leftleg" , type = "revolute", position = [0, -0.25, c.height-1], jointAxis = "0 1 0")
-        self.joints.append("Torso_Leftleg")
-        pyrosim.Send_Cube(name="Leftleg", pos=[0, 0, -1], size=[0.2, 0.2, 2])
-        self.links.append("Leftleg")
-        pyrosim.Send_Joint( name = "Torso_Rightleg" , parent= "Torso" , child = "Rightleg" , type = "revolute", position = [0, 0.25, c.height-1], jointAxis = "0 1 0")
-        self.joints.append("Torso_Rightleg")
-        pyrosim.Send_Cube(name="Rightleg", pos=[0, 0, -1], size=[0.2, 0.2, 2])
-        self.links.append("Rightleg")
-        pyrosim.Send_Joint(name="Rightarm_Righthand", parent="Rightarm", child = "Righthand", type="revolute", position=[0, 0, -1], jointAxis="0 1 0")
-        self.joints.append("Rightarm_Righthand")
-        pyrosim.Send_Cube(name="Righthand", pos=[0, 0, -0.5], size=[0.2, 0.2, 1])
-        self.links.append("Righthand")
-        pyrosim.Send_Joint(name="Leftarm_Lefthand", parent="Leftarm", child = "Lefthand", type="revolute", position=[0, 0, -1], jointAxis="0 1 0")
-        self.joints.append("Leftarm_Lefthand")
-        pyrosim.Send_Cube(name="Lefthand", pos=[0, 0, -0.5], size=[0.2, 0.2, 1])
-        self.links.append("Lefthand")
-        pyrosim.Send_Joint(name="Leftleg_Leftshin", parent="Leftleg", child = "Leftshin", type="revolute", position=[0, 0, -2], jointAxis="0 1 0")
-        self.joints.append("Leftleg_Leftshin")
-        pyrosim.Send_Cube(name="Leftshin", pos=[0, 0, -1], size=[0.2, 0.2, 2])
-        self.links.append("Leftshin")
-        pyrosim.Send_Joint(name="Rightleg_Rightshin", parent="Rightleg", child = "Rightshin", type="revolute", position=[0, 0, -2], jointAxis="0 1 0")
-        self.joints.append("Rightleg_Rightshin")
-        pyrosim.Send_Cube(name="Rightshin", pos=[0, 0, -1], size=[0.2, 0.2, 2])
-        self.links.append("Rightshin")
-        pyrosim.Send_Joint(name="Rightshin_Rightfoot", parent="Rightshin", child="Rightfoot", type="revolute", position=[0, 0, -2], jointAxis="0 1 0")
-        self.joints.append("Rightshin_Rightfoot")
-        pyrosim.Send_Cube(name="Rightfoot", pos=[0.5, 0, 0], size=[1, 0.2, 0.2])
-        self.links.append("Rightfoot")
-        pyrosim.Send_Joint(name="Leftshin_Leftfoot", parent="Leftshin", child="Leftfoot", type="revolute", position=[0, 0, -2], jointAxis="0 1 0")
-        self.joints.append("Leftshin_Leftfoot")
-        pyrosim.Send_Cube(name="Leftfoot", pos=[0.5, 0, 0], size=[1, 0.2, 0.2])
-        self.links.append("Leftfoot")
+        pyrosim.Start_URDF("body" + str(self.myID) + ".urdf")
+        rL = random.randint(-1, 1)
+        self.Node(recursiveLimit= 3+rL, posi=[0, 0, 1], sizzle=[2, 3, 1], firstIter=True)
         pyrosim.End()
+        self.weightsToHidden = np.random.rand(len(self.links), c.numHiddenNeurons)
+        self.weightsToHidden = 2 * self.weightsToHidden - 1
+        self.weightsToMotor = np.random.rand(c.numHiddenNeurons, len(self.joints))
+        self.weightsToMotor = 2 * self.weightsToMotor - 1
 
 
     def Create_Brain(self):
         pyrosim.Start_NeuralNetwork("brain" + str(self.myID) + ".nndf")
+        # Create sensor neurons for the selected links
         for i in range(len(self.links)):
             pyrosim.Send_Sensor_Neuron(name=i, linkName=self.links[i])
         newBase = len(self.links)
+        # create hidden neurons
         for i in range(c.numHiddenNeurons):
             pyrosim.Send_Hidden_Neuron(name=i+newBase)
         newBase += c.numHiddenNeurons
+        # create motor neurons for all joints
         for i in range(len(self.joints)):
             pyrosim.Send_Motor_Neuron(name=i+newBase, jointName=self.joints[i])
-        for currentRow in range(c.numSensorNeurons):
+        # create synapses for a fully-connected layer of sensors and hidden neurons
+        for currentRow in range(len(self.links)):
             for currentColumn in range(c.numHiddenNeurons):
                 sensor = currentRow
-                hidden = currentColumn + c.numSensorNeurons
-                pyrosim.Send_Synapse(sourceNeuronName=sensor, targetNeuronName=hidden, weight=self.weightsToHidden[currentRow][currentColumn])
+                hidden = currentColumn + len(self.links)
+                pyrosim.Send_Synapse(sourceNeuronName=sensor, targetNeuronName=hidden, weight=self.weightsToHidden[currentRow, currentColumn])
+        # Create synapes for a fully-connected layer of hidden neurons and motors
         for currentRow in range(c.numHiddenNeurons):
-            for currentColumn in range(c.numMotorNeurons):
-                hidden = currentRow + c.numSensorNeurons
-                motor = currentColumn + c.numHiddenNeurons + c.numSensorNeurons
-                pyrosim.Send_Synapse(sourceNeuronName=hidden, targetNeuronName=motor, weight=self.weightsToMotor[currentRow][currentColumn])
+            for currentColumn in range(len(self.joints)):
+                hidden = currentRow + len(self.links)
+                motor = currentColumn + c.numHiddenNeurons + len(self.links)
+                pyrosim.Send_Synapse(sourceNeuronName=hidden, targetNeuronName=motor, weight=self.weightsToMotor[currentRow, currentColumn])
         pyrosim.End()
 
 
     def Mutate(self):
-        rowMutated = random.randint(0, c.numSensorNeurons-1)
+        rowMutated = random.randint(0, len(self.links)-1)
         columnMutated = random.randint(0, c.numHiddenNeurons-1)
         self.weightsToHidden[rowMutated, columnMutated] = random.random() * 2 - 1
         rowMutated = random.randint(0, c.numHiddenNeurons-1)
-        columnMutated = random.randint(0, c.numMotorNeurons-1)
+        columnMutated = random.randint(0, len(self.joints)-1)
         self.weightsToMotor[rowMutated, columnMutated] = random.random() * 2 - 1
 
 
@@ -150,3 +98,42 @@ class SOLUTION:
         self.myID = nextAvailableID
 
 
+    def Node(self, recursiveLimit, posi, sizzle, firstIter=False):
+        pyrosim.Send_Cube(name=str(self.currentLink), pos=posi, size=sizzle)
+        existsNeuron = random.random() < 0.5
+        if existsNeuron:
+            self.links.append(str(self.currentLink))
+        if recursiveLimit > 0:
+            self.Edge(sizzle, recursiveLimit-1, posi, firstIter=firstIter)
+        return
+
+
+    def Edge(self, sizzle, rL, posi, firstIter=False):
+        jName = str(self.currentLink) + "_" + str(self.currentLink + 1)
+        jAxisSel = random.random()
+        jointPos = [sizzle[0], 0, 0]
+        if firstIter:
+            jointPos[0] /= 2
+            jointPos[2] = posi[2]
+            posi[2] = 0
+        if jAxisSel < 0.5:
+            jAxis = "1 0 0"
+        elif jAxisSel < 0.95:
+            jAxis = "0 1 0"
+        else:
+            jAxis = "0 0 1"
+        pyrosim.Send_Joint(name=jName, 
+                           parent=str(self.currentLink), 
+                           child=str(self.currentLink+1), 
+                           type="revolute", 
+                           position=jointPos, 
+                           jointAxis=jAxis)
+        self.joints.append(jName)
+        self.currentLink += 1
+        for i in range(len(sizzle)-1):
+            sizzle[i] *= random.gauss(1, 0.3)
+        posi[0] = sizzle[0]/2
+        self.Node(rL, posi, sizzle)
+        return
+
+        

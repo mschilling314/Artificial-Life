@@ -9,6 +9,7 @@ class PARALLEL_HILL_CLIMBER:
     def __init__(self) -> None:
         os.system("del brain*.nndf")
         os.system("del fitness*.txt")
+        os.system("del body*.urdf")
         self.parents = dict()
         self.nextAvailableID = 0
         self.evolveCalled = False
@@ -71,7 +72,7 @@ class PARALLEL_HILL_CLIMBER:
             child.Mutate()
 
     def Select(self):
-        # this statement is what it is bc fitness is the x-coord which we want more negative
+        # this statement is what it is bc fitness is the x-coord which we want more positive
         for key in self.parents.keys():
             parent = self.parents[key]
             child = self.children[key]

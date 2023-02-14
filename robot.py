@@ -8,21 +8,24 @@ import constants as c
 
 
 class ROBOT:
-    def __init__(self, sID) -> None:
+    def __init__(self, sID, links) -> None:
         self.sensors = dict()
+        self.links = links
         self.nn = NEURAL_NETWORK("brain" + str(sID) + ".nndf")
         self.motors = dict()
         self.myID = sID
-        self.robotID = p.loadURDF("body.urdf")
+        self.robotID = p.loadURDF("body" + str(self.myID) + ".urdf")
         pyrosim.Prepare_To_Simulate(self.robotID)
         self.Prepare_To_Sense()
         self.Prepare_To_Act()
         cmd = "del brain" + str(self.myID) + ".nndf"
         os.system(cmd)
+        cmd = "del body" + str(self.myID) + ".urdf"
+        os.system(cmd)
 
 
     def Prepare_To_Sense(self):
-        for linkName in pyrosim.linkNamesToIndices:
+        for linkName in self.links:
             self.sensors[linkName] = SENSOR(linkName)
 
 
