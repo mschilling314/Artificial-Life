@@ -11,10 +11,16 @@ In this assignment, I modified solution.py among other files so that I could pro
 
 ## Generation
 
+The body is generated using a directed graph with nodes serving as the links, and edges as the joints.  The idea is that this is to be a template for an indirect encoding, however at the moment the only type of body encoded is a quadruped with the potential for variable length legs where all four legs would be have the same number of links, but could have differing lengths.  The indirect encoding is shown in the diagram below.
+<img Title="Indirect Encoding Diagram" alt="Indirect Encoding Diagram" src="diagrams/body.jpg"></img>
+As for the brain, it was generated partly alongside the body, by randomly picking which links would get a sensor neuron, with a 70% probability that they would.  The brain can then be envisioned as a completely connected neural net where the set of sensors is the input layer, there is a hidden layer with a constant number of five hidden neurons (future experimentation will randomize this as well as add the potential for more hidden layers), with the output layer consisting of one motor neuron for every joint.  See the diagram below.
+<img Title="Overarching Structure of Codebase" alt="Brain Diagram" src="diagrams/brain.jpg"></img>
+
+
 ## Codebase
 
 The following diagram illustrates most of the codebase's structure, courtesy of Professor Kriegman (see citations below).
-<img Title="Overarching Structure of Codebase" alt="Codebase Diagram" src="diagrams/ludobots.png"></img>
+<img Title="Brain" alt="Codebase Diagram" src="diagrams/ludobots.png"></img>
 Though, instead of evolve.py, we use search.py which makes calls to parallelHillClimber.py to actually do the evolution, where each call to solution.py within parallelHillClimber.py is equivalent to the genome blocks.
 
 ## Video Demonstration
