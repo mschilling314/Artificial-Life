@@ -2,6 +2,7 @@ import os
 import random
 import time
 import numpy as np
+from bodyPlan import BODYPLAN
 import pyrosim.pyrosim as pyrosim
 import simulate
 import multiprocessing
@@ -50,8 +51,9 @@ class SOLUTION:
 
     def Create_Body(self):
         pyrosim.Start_URDF("body" + str(self.myID) + ".urdf")
-        rL = random.randint(1, 10)
-        self.Node(recursiveLimit=rL, posi=[0, 0, .1], sizzle=[.2, .3, .1], firstIter=True)
+        rL = random.randint(1, 5)
+        bp = BODYPLAN()
+        self.Node(bp, 0, "a", recursiveLimit=rL, posi=[0, 0, .1], sizzle=[.2, .3, .1], firstIter=True)
         pyrosim.End()
         # print("\n\n\nThe link names are: ", self.links)
         self.weightsToHidden = np.random.rand(len(self.links), c.numHiddenNeurons)
@@ -102,23 +104,39 @@ class SOLUTION:
     def Set_ID(self, nextAvailableID):
         self.myID = nextAvailableID
 
-
-    def Node(self, recursiveLimit, posi, sizzle, firstIter=False):
+    
+    def createNeuron(self, name):
         existsNeuron = random.random() < 0.7
         cS = '<color rgba="0 0 1 1"/>'
         col = 'Blue'
         if existsNeuron:
-            self.links.append(str(self.currentLink))
+            self.links.append(name)
             cS = '<color rgba="0 1 0 1"/>'
             col = 'Green'
-        pyrosim.Send_Cube(name=str(self.currentLink), pos=posi, size=sizzle, colorString= cS, color=col)
+        return cS, col
+    
+
+    def createEdgeQueue(self, node, bodyPlan) -> list:
+        edgeQueue = []
+        for i in range(len(bodyPlan.bodyEdgeMatrix[node])):
+            for _ in range(bodyPlan.bodyEdgeMatrix[node][i]):
+                edgeQueue.append(i)
+        return edgeQueue
+
+
+    def Node(self, bodyPlan, node, name, recursiveLimit, posi, sizzle, firstIter=False):
+        cS, col = self.createNeuron(name)
+        pyrosim.Send_Cube(name=name, pos=posi, size=sizzle, colorString= cS, color=col)
         if recursiveLimit > 0:
-            self.Edge(sizzle, recursiveLimit-1, posi, firstIter=firstIter)
+            edgeQueue = self.createEdgeQueue(node, bodyPlan)
+            for i, edge in enumerate(edgeQueue):
+                kid = name + chr(ord("a") + i)
+                self.Edge(bodyPlan, name, kid, sizzle, recursiveLimit-1, posi, edge, firstIter=firstIter)
         return
 
 
-    def Edge(self, sizzle, rL, posi, firstIter=False):
-        jName = str(self.currentLink) + "_" + str(self.currentLink + 1)
+    def Edge(self, bodyPlan, name, kid, sizzle, rL, posi, edge, firstIter=False):
+        jName = name + "_" + kid
         jAxisSel = random.random()
         jointPos = [sizzle[0], 0, 0]
         if firstIter:
@@ -132,8 +150,8 @@ class SOLUTION:
         else:
             jAxis = "0 0 1"
         pyrosim.Send_Joint(name=jName, 
-                           parent=str(self.currentLink), 
-                           child=str(self.currentLink+1), 
+                           parent=name, 
+                           child=kid, 
                            type="revolute", 
                            position=jointPos, 
                            jointAxis=jAxis)
@@ -142,7 +160,7 @@ class SOLUTION:
         for i in range(len(sizzle)-1):
             sizzle[i] *= random.gauss(1, 0.3)
         posi[0] = sizzle[0]/2
-        self.Node(rL, posi, sizzle)
+        self.Node(bodyPlan, edge, kid, rL, posi, sizzle)
         return
 
         

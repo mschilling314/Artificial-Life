@@ -1,7 +1,7 @@
 import numpy as np
 pi = np.pi
 
-iter = 60
+iter = 60000000
 amplitude = pi/4
 frequency = 10
 phaseOffset = 0
@@ -12,7 +12,7 @@ maxForce = 5000
 sleepFreq = 1/600
 g = -9.8
 populationSize = 1
-numberOfGenerations = 7
+numberOfGenerations = 0
 
 
 numHiddenNeurons = 5
