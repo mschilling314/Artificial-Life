@@ -112,31 +112,34 @@ class SOLUTION:
 
     def Create_Body(self):
         pyrosim.Start_URDF("body" + str(self.myID) + ".urdf")
-        rL = 2 #andom.randint(1, 5)
+        rL = int(random.gauss(2, 0.5))
         bp = BODYPLAN()
-        self.Node(bp, 0, "a", recursiveLimit=rL, posi=[0, 0, 5], sizzle=[.2, .3, .1], firstIter=True)
+        self.coreHeight = 1.5*rL*bp.maxHeight()
+        self.Node(bp, 0, "a", recursiveLimit=rL, posi=[0, 0, self.coreHeight])
         pyrosim.End()
-        # print("\n\n\nThe link names are: ", self.links)
         self.weightsToHidden = np.random.rand(len(self.links), c.numHiddenNeurons)
         self.weightsToHidden = 2 * self.weightsToHidden - 1
         self.weightsToMotor = np.random.rand(c.numHiddenNeurons, len(self.joints))
         self.weightsToMotor = 2 * self.weightsToMotor - 1
 
 
-    def Node(self, bodyPlan, node, name, recursiveLimit, posi, sizzle, firstIter=False):
+    def Node(self, bodyPlan, node, name, recursiveLimit, posi):
         cS, col = self.createNeuron(name)
-        pyrosim.Send_Cube(name=name, pos=posi, size=bodyPlan.sizzles[node], colorString= cS, color=col)
+        s = bodyPlan.sizzles[node]
+        for i in range(len(s)-1):
+                s[i] *= random.gauss(1, 0.3)
+        pyrosim.Send_Cube(name=name, pos=posi, size=s, colorString= cS, color=col)
         if recursiveLimit > 0:
             edgeQueue = self.createEdgeQueue(node, bodyPlan)
             for i, edge in enumerate(edgeQueue):
                 kid = name + chr(ord("a") + i)
-                self.Edge(bodyPlan, name, kid, bodyPlan.sizzles[node], recursiveLimit-1, posi, edge, firstIter=firstIter)
+                self.Edge(bodyPlan, name, kid, s, recursiveLimit-1, posi, edge)
         return
 
 
-    def Edge(self, bodyPlan, name, kid, sizzle, rL, posi, edge, firstIter=False):
+    def Edge(self, bodyPlan, name, kid, sizzle, rL, posi, edge):
         jName = name + "_" + kid
-        jointPos = self.pickJointPosition(kid, sizzle, posi, firstIter)
+        jointPos = self.pickJointPosition(kid, sizzle)
         posi[2] = 0
         pyrosim.Send_Joint(name=jName, 
                            parent=name, 
@@ -145,20 +148,17 @@ class SOLUTION:
                            position=jointPos, 
                            jointAxis=self.pickJointAxis())
         self.joints.append(jName)
-        # for i in range(len(sizzle)-1):
-        #     sizzle[i] *= random.gauss(1, 0.3)
-        posi[0] = sizzle[0]/2
-        self.Node(bodyPlan, edge, kid, rL, posi, sizzle)
+        self.Node(bodyPlan, edge, kid, rL, posi)
         return
 
 
-    def pickJointPosition(self, kid, s, p, f):
+    def pickJointPosition(self, kid, s):
         pos = [0, 0, 0]
         ind = 0
         sign = 1
         
         # if it's 1st iter, fix things
-        if f:
+        if len(kid) == 2:
             # pick orientation for a quadruped bodyplan (need to gen.)
             if kid[1] == "c" or kid[1] == "a":
                 sign = -1
@@ -166,7 +166,7 @@ class SOLUTION:
                 ind = 1
             pos[ind] = sign * s[ind]
             pos[ind] /= 2
-            pos[2] = p[2]
+            pos[2] = self.coreHeight - s[2]
             print(pos)
         else:
             pos[2] = -s[2]
