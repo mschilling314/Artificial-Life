@@ -18,6 +18,6 @@ numberOfGenerations = 10
 
 numHiddenNeurons = 5
 
-motorJointRange = 0.5
+motorJointRange = 0.3
 
 height = 5.2

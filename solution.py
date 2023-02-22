@@ -44,6 +44,10 @@ class SOLUTION:
 
     def Create_World(self):
         pyrosim.Start_SDF("world.sdf")
+        for i in range(25):
+            x = random.randint(-100, 100) + 3
+            y = random.randint(-100, 100) + 3
+            self.sendCube(nomen="Box" + str(i), x = random.randint(-10, 10), y = random.randint(-10, 10))
         self.sendCube("Box", -2, -2)
         pyrosim.End()
 
@@ -114,7 +118,7 @@ class SOLUTION:
         pyrosim.Start_URDF("body" + str(self.myID) + ".urdf")
         rL = int(random.gauss(2, 0.5))
         bp = BODYPLAN()
-        self.coreHeight = 1.5*rL*bp.maxHeight()
+        self.coreHeight = rL*bp.maxHeight()
         self.Node(bp, 0, "a", recursiveLimit=rL, posi=[0, 0, self.coreHeight])
         pyrosim.End()
         self.weightsToHidden = np.random.rand(len(self.links), c.numHiddenNeurons)

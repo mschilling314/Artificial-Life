@@ -24,7 +24,7 @@ The following diagram illustrates most of the codebase's structure, courtesy of 
 Though, instead of evolve.py, we use search.py which makes calls to parallelHillClimber.py to actually do the evolution, where each call to solution.py within parallelHillClimber.py is equivalent to the genome blocks.
 
 ## Video Demonstration
-
+<iframe width="640" height="360" src="https://youtu.be/k8zppb4T30M" alt="Video of 3D Generating Ludobots" allowfullscreen></iframe>
 
 # Citations
 This project built upon the Ludobots course, which can be found [here](https://www.reddit.com/r/ludobots/).
