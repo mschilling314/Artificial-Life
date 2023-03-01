@@ -64,5 +64,4 @@ class ROBOT:
         f.write(str(xPosition))
         f.close()
         cmd = "rename tmp" + str(self.myID) + ".txt fitness" + str(self.myID) + ".txt"
-        # print("\n\n\n\nRobot ", self.myID, "\n\n\n\n\n")
         os.system(cmd)

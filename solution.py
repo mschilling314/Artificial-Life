@@ -6,6 +6,7 @@ from bodyPlan import BODYPLAN
 import pyrosim.pyrosim as pyrosim
 import simulate
 import multiprocessing
+import body
 import constants as c
 
 
@@ -44,7 +45,7 @@ class SOLUTION:
 
     def Create_World(self):
         pyrosim.Start_SDF("world.sdf")
-        for i in range(25):
+        for i in range(1):
             x = random.randint(-100, 100) + 3
             y = random.randint(-100, 100) + 3
             self.sendCube(nomen="Box" + str(i), x = random.randint(-10, 10), y = random.randint(-10, 10))
@@ -115,12 +116,14 @@ class SOLUTION:
 
 
     def Create_Body(self):
-        pyrosim.Start_URDF("body" + str(self.myID) + ".urdf")
         rL = int(random.gauss(2, 0.5))
         bp = BODYPLAN()
+        self.body = body.BODY(self.myID)
         self.coreHeight = rL*bp.maxHeight()
+        pyrosim.Start_URDF("body" + str(self.myID) + ".urdf")
         self.Node(bp, 0, "a", recursiveLimit=rL, posi=[0, 0, self.coreHeight])
         pyrosim.End()
+        # self.body.writeBodyToFile()
         self.weightsToHidden = np.random.rand(len(self.links), c.numHiddenNeurons)
         self.weightsToHidden = 2 * self.weightsToHidden - 1
         self.weightsToMotor = np.random.rand(c.numHiddenNeurons, len(self.joints))
@@ -128,11 +131,11 @@ class SOLUTION:
 
 
     def Node(self, bodyPlan, node, name, recursiveLimit, posi):
-        cS, col = self.createNeuron(name)
         s = bodyPlan.sizzles[node]
         for i in range(len(s)-1):
                 s[i] *= random.gauss(1, 0.3)
-        pyrosim.Send_Cube(name=name, pos=posi, size=s, colorString= cS, color=col)
+        self.body.addLink(name=name, position=posi, size=s, sensor=random.random() < 0.7)
+        pyrosim.Send_Cube(name=name, pos = posi, size=s, colorString = self.body.links[-1].colorString, color=self.body.links[-1].color)
         if recursiveLimit > 0:
             edgeQueue = self.createEdgeQueue(node, bodyPlan)
             for i, edge in enumerate(edgeQueue):
@@ -145,6 +148,7 @@ class SOLUTION:
         jName = name + "_" + kid
         jointPos = self.pickJointPosition(kid, sizzle)
         posi[2] = 0
+        self.body.addJoint(jName, name, kid, "revolute", jointPos, self.pickJointAxis())
         pyrosim.Send_Joint(name=jName, 
                            parent=name, 
                            child=kid, 

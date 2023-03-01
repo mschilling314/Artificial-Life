@@ -1,3 +1,6 @@
+import pyrosim.pyrosim as pyrosim
+
+
 class JOINTS:
     def __init__(self, name, parent, child, type, position, axis) -> None:
         self.name = name
@@ -8,5 +11,10 @@ class JOINTS:
         self.axis = axis
 
 
-    def writeToFile(self, file):
-        
+    def writeToFile(self):
+        pyrosim.Send_Joint(name = self.name, 
+                           parent = self.parent,
+                           child = self.child,
+                           type = self.type,
+                           position = self.position,
+                           jointAxis = self.axis)
