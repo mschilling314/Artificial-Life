@@ -10,6 +10,8 @@ class BODYPLAN:
     bodyEdgeMatrix (np.array):  Gives the adjacency matrix of the directed graph, all entries must be ints.
     sizzles (dict[list[float]]): Provides the size of each type of bodypart.
     """
+
+    
     def __init__(self, 
                  adjacencyMatrix: np.array=np.array([[0, 2],
                                                      [0, 1]]),

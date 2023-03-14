@@ -8,6 +8,7 @@ def run_sim():
     phc = parallelHillClimber.PARALLEL_HILL_CLIMBER()
     # phc.Show_Best()
     phc.Evolve()
+    input("Press enter to continue.\n")
     phc.Show_Best(lambda x, y: x.fitness > y.fitness)
 
 

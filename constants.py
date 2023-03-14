@@ -13,7 +13,7 @@ maxForce = 5000
 sleepFreq = 1/600
 g = -9.8
 populationSize = 1
-numberOfGenerations = 0
+numberOfGenerations = 2
 
 
 numHiddenNeurons = 5

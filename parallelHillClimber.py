@@ -43,7 +43,7 @@ class PARALLEL_HILL_CLIMBER:
         Runs evolution for a generation by Spawning new children, mutating them, evaluating them, and then selecting the children or parents in each "silo".
         """
         self.Spawn()
-        self.Mutate()
+        # self.Mutate()
         self.Evaluate(self.children)
         # self.Print()
         self.Select(fitter=lambda p, c: p.fitness > c.fitness)

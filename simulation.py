@@ -22,6 +22,7 @@ class SIMULATION:
             exit()
         p.setAdditionalSearchPath(pybullet_data.getDataPath())
         p.setGravity(0, 0, c.g)
+        self.id = solnID
         self.world = WORLD()
         self.robot = ROBOT(solnID, lynx)
         
@@ -32,6 +33,8 @@ class SIMULATION:
         """
         for i in range(c.iter):
             p.stepSimulation()
+            # basePos, baseOrn = p.getBasePositionAndOrientation(self.id)
+            # p.resetDebugVisualizerCamera( cameraDistance = 5, cameraYaw=75, cameraPitch=-20, cameraTargetPosition = basePos)
             self.robot.Sense(i)
             self.robot.Think()
             self.robot.Act()

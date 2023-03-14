@@ -19,15 +19,21 @@ class SOLUTION:
     joints (list[str]):  A list of the joints within the robot.
     links (list[str]):  A list of the links within the robot that have sensor neurons.
     bodyPlan (BODYPLAN):  The bodyplan encoded in a directed graph.
+    recursiveLimit (int): The recursive limit for the indirect encoding.
     fitness (float):  A measure of how well a given solution does.
     weightsToHidden (np.array): The weights between sensor and hidden neurons.
     weightsToMotor (np.array):  The weights between hidden and motor neurons.
     coreHeight (float):  The estimated core height of the robot, calculated using the recursive limit and bodyPlan.
     """
+    
+
     def __init__(self, nextAvailableID: int) -> None:
+        self.recursiveLimit = int(random.gauss(2, 0.5))
         self.myID = nextAvailableID
         self.joints = []
         self.links = []
+        self.cubes = dict()
+        self.js = dict()
         self.bodyPlan = BODYPLAN()
         self.original = True
 
@@ -45,10 +51,14 @@ class SOLUTION:
         """
         if self.myID == 0:
             self.Create_World()
-        self.links = []
-        self.joints = []
-        self.Create_Body()
-        self.Create_Brain()
+        # self.links = []
+        # self.joints = []
+        if self.original:
+            self.Create_Body()
+            self.Create_Brain()
+        self.Mutate()
+        self.writeBodyFile()
+        self.writeBrainFile()
         p = multiprocessing.Process(target=simulate.Simulate, args=[self.links, show, self.myID])
         p.start()
 
@@ -84,11 +94,17 @@ class SOLUTION:
         Nothing.
         """
         pyrosim.Start_SDF("world.sdf")
-        # pyrosim.Send_Cube(name="Box", pos=[0, 0, 0.5], size=[1,1,1])
         pyrosim.End()
 
 
     def Create_Brain(self) -> None:
+        self.weightsToHidden = np.random.rand(len(self.links), c.numHiddenNeurons)
+        self.weightsToHidden = 2 * self.weightsToHidden - 1
+        self.weightsToMotor = np.random.rand(c.numHiddenNeurons, len(self.joints))
+        self.weightsToMotor = 2 * self.weightsToMotor - 1
+
+
+    def writeBrainFile(self) -> None:
         """
         Creates the brain.nndf file for a given solution, but assumes only a single hidden layer architecture, so may need to rewrite for generality.
 
@@ -135,14 +151,57 @@ class SOLUTION:
         Returns:
         Nothing, modifies internal fields.
         """
+        if random.random() > 0.4:
+            self.mutateBrain()
+        if random.random() > 0.35:
+            self.mutateBody()
+
+    
+    def mutateBody(self) -> None:
+        """
+        Function that uses bodyPlan to mutate a body, with various probability for various mutations.  If a mutation occurs, the joints are also randomly mutated.
+
+        Namely:
+        5% chance that a bodypart will be added, with random chance for edges.
+        20% chance of a size mutation for a random part.
+        1% chance a part will be deleted (its edges set to weight zero, this is low because it could break the creature entirely).
+        """
+        mB = False
+        if random.random()< 0.05:
+            mB = True
+            wIn = []
+            wO = []
+            for i in range(len(self.bodyPlan.sizzles)):
+                if random.random() < 1/len(self.bodyPlan.sizzles):
+                    wIn.append(i, random.randint(0, 4))
+                if random.random() < 1/len(self.bodyPlan.sizzles):
+                    wO.append(i, random.randint(0,4))
+            s = np.random.random(3).tolist()
+            self.bodyPlan.addNode(weightsIn=wIn, weightsOut=wO, size=s)
+        if random.random()< 0.2:
+            mB = True
+            self.bodyPlan.mutateSizes(random.randint(0, len(self.bodyPlan.sizzles)-1))
+        if random.random()< 0.01:
+            mB = True
+            self.bodyPlan.deleteNode(random.randint(0, len(self.bodyPlan.sizzles)-1))
+        if mB:
+            self.Create_Body()
+
+
+    def mutateBrain(self) -> None:
+        """
+        Changes the brain, with 60% independent chance of changing a weight between sensing and hidden or hidden and motor.
+        """
         if len(self.links) == 0:
             return
-        rowMutated = random.randint(0, len(self.links)-1)
-        columnMutated = random.randint(0, c.numHiddenNeurons-1)
-        self.weightsToHidden[rowMutated, columnMutated] = random.random() * 2 - 1
-        rowMutated = random.randint(0, c.numHiddenNeurons-1)
-        columnMutated = random.randint(0, len(self.joints)-1)
-        self.weightsToMotor[rowMutated, columnMutated] = random.random() * 2 - 1
+        if random.random()< 0.6:
+            rowMutated = random.randint(0, len(self.links)-1)
+            columnMutated = random.randint(0, c.numHiddenNeurons-1)
+            self.weightsToHidden[rowMutated, columnMutated] = random.random() * 2 - 1
+        if random.random()< 0.6:
+            rowMutated = random.randint(0, c.numHiddenNeurons-1)
+            columnMutated = random.randint(0, len(self.joints)-1)
+            self.weightsToMotor[rowMutated, columnMutated] = random.random() * 2 - 1
 
 
     def Set_ID(self, nextAvailableID: int) -> None:
@@ -208,15 +267,9 @@ class SOLUTION:
         Returns:
         Nothing, writes to a file though.
         """
-        pyrosim.Start_URDF("body" + str(self.myID) + ".urdf")
-        rL = int(random.gauss(2, 0.5))
-        self.coreHeight = rL*self.bodyPlan.maxHeight()
-        self.Node(node=0, name="a", recursiveLimit=rL, posi=[0, 0, self.coreHeight])
-        pyrosim.End()
-        self.weightsToHidden = np.random.rand(len(self.links), c.numHiddenNeurons)
-        self.weightsToHidden = 2 * self.weightsToHidden - 1
-        self.weightsToMotor = np.random.rand(c.numHiddenNeurons, len(self.joints))
-        self.weightsToMotor = 2 * self.weightsToMotor - 1
+        self.coreHeight = self.recursiveLimit*self.bodyPlan.maxHeight()
+        self.Node(node=0, name="a", recursiveLimit=self.recursiveLimit, posi=[0, 0, self.coreHeight])
+        # exit()
 
 
     def Node(self, node: int, name: str, recursiveLimit: int, posi: list[float]) -> None:
@@ -234,8 +287,7 @@ class SOLUTION:
         """
         cS, col = self.createNeuron(name)
         s = self.bodyPlan.sizzles[node]
-        self.bodyPlan.mutateSizes(node=node)
-        pyrosim.Send_Cube(name=name, pos=posi, size=s, colorString= cS, color=col)
+        self.cubes[name] = [name, posi[:], s[:], cS, col]
         if recursiveLimit > 0:
             edgeQueue = self.createEdgeQueue(node)
             for i, edge in enumerate(edgeQueue):
@@ -263,12 +315,8 @@ class SOLUTION:
         jName = name + "_" + kid
         jointPos = self.pickJointPosition(edgeNode, kid)
         posi[2] = 0
-        pyrosim.Send_Joint(name=jName, 
-                           parent=name, 
-                           child=kid, 
-                           type="revolute", 
-                           position=jointPos, 
-                           jointAxis=self.pickJointAxis())
+        jAxis = self.pickJointAxis()
+        self.js[jName] = [jName, name, kid, "revolute", jointPos, jAxis]
         self.joints.append(jName)
         self.Node(edgeNode, kid, rL, posi)
         return
@@ -291,7 +339,6 @@ class SOLUTION:
         ind = 0
         sign = 1
         
-        # if it's 1st iter, fix things
         if len(kid) == 2:
             # pick orientation for a quadruped bodyplan (need to gen.)
             if kid[1] == "c" or kid[1] == "a":
@@ -300,8 +347,7 @@ class SOLUTION:
                 ind = 1
             pos[ind] = sign * self.bodyPlan.sizzles[node][ind]
             pos[ind] /= 2
-            pos[2] = self.coreHeight - self.bodyPlan.sizzles[node][2]
-            print(pos)
+            pos[2] = self.coreHeight - 0.5 * self.bodyPlan.sizzles[node][2]
         else:
             pos[2] = -self.bodyPlan.sizzles[node][2]
         
@@ -327,3 +373,39 @@ class SOLUTION:
             jAxis = "0 0 1"
         return jAxis
         
+
+    def createHeirarchyOfBody(self)->list:
+        """
+        Returns a list of joints and links in the order they should be written to a body file.
+        """
+        links = set()
+        result = []
+        js = sorted(self.joints, key=lambda x: (len(x), x))
+        for joint in js:
+            j = joint.split("_")
+            if j[0] not in links:
+                result.append(j[0])
+                links.add(j[0])
+            result.append(joint)
+            if j[1] not in links:
+                result.append(j[1])
+                links.add(j[1])
+        return result
+
+
+    def writeBodyFile(self) -> None:
+        """
+        Used to actually write the body file after the body is procedurally generated.
+        """        
+        pyrosim.Start_URDF("body" + str(self.myID) + ".urdf")
+        order = self.createHeirarchyOfBody()
+        for el in order:
+            if el in self.js:
+                j = self.js[el]
+                pyrosim.Send_Joint(j[0], j[1], j[2], j[3], j[4], j[5])
+            if el in self.cubes:
+                l = self.cubes[el]
+                pyrosim.Send_Cube(l[0], l[1], l[2], l[3], l[4])
+        pyrosim.End()
+        
+
