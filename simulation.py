@@ -34,7 +34,7 @@ class SIMULATION:
             p.stepSimulation()
             self.robot.Sense(i)
             self.robot.Think()
-            self.robot.Act(i)
+            self.robot.Act()
             if self.directOrGui == "GUI":
                 time.sleep(c.sleepFreq)
 
