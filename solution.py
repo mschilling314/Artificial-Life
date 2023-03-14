@@ -14,6 +14,7 @@ class SOLUTION:
     A class holding a possible solution to try for the fitness function.
 
     Attributes:
+    original (bool):  Indicates whether this is the original or has been copied.
     myID (int):  An identifier for this particular solution.
     joints (list[str]):  A list of the joints within the robot.
     links (list[str]):  A list of the links within the robot that have sensor neurons.
@@ -23,11 +24,12 @@ class SOLUTION:
     weightsToMotor (np.array):  The weights between hidden and motor neurons.
     coreHeight (float):  The estimated core height of the robot, calculated using the recursive limit and bodyPlan.
     """
-    def __init__(self, nextAvailableID) -> None:
+    def __init__(self, nextAvailableID: int) -> None:
         self.myID = nextAvailableID
         self.joints = []
         self.links = []
         self.bodyPlan = BODYPLAN()
+        self.original = True
 
 
     def Start_Simulation(self, show: str="DIRECT") -> None:

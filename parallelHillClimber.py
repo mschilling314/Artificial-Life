@@ -80,6 +80,7 @@ class PARALLEL_HILL_CLIMBER:
         for key, parent in self.parents.items():
             # Reconsider the deepcopy
             self.children[key] = copy.deepcopy(parent)
+            self.children[key].original = False
             self.children[key].Set_ID(self.nextAvailableID)
             self.nextAvailableID += 1
 

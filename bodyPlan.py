@@ -10,7 +10,7 @@ class BODYPLAN:
     sizzles (dict[lis[float]]): Provides the size of each type of bodypart.
     """
     def __init__(self) -> None:
-        self.bodyEdgeMatrix = [[0, 4],
+        self.bodyEdgeMatrix = [[0, 2],
                            [0, 1]]
         # self.bodyEdgeMatrix = [[1]]
         self.sizzles = {0: [1,2,0.5],
