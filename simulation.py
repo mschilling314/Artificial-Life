@@ -3,11 +3,13 @@ from world import WORLD
 import pybullet as p
 import constants as c
 import pybullet_data
-import pyrosim
 import time
 
 
 class SIMULATION:
+    """
+    A class designed to create and run a simulation involving a singular robot.
+    """
     def __init__(self, lynx, pretty="DIRECT", solnID=0) -> None:
         self.directOrGui = pretty
         if pretty == "DIRECT":
@@ -25,6 +27,9 @@ class SIMULATION:
         
 
     def Run(self):
+        """
+        The process of actually running a simulation, done by performing the robot's methods in a particular order.
+        """
         for i in range(c.iter):
             p.stepSimulation()
             self.robot.Sense(i)
@@ -35,8 +40,14 @@ class SIMULATION:
 
     
     def __del__(self):
+        """
+        Simple deconstructor that disconnects the simulation.
+        """
         p.disconnect()
 
 
-    def Get_Fitness(self):
+    def Get_Fitness(self) -> None:
+        """
+        Orders the robot to write its fitness to a file.
+        """
         self.robot.Get_Fitness()
