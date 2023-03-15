@@ -1,23 +1,30 @@
 import numpy as np
 pi = np.pi
 
-iter = 2000
+iter = 1000
+coreHeight = 10
 amplitude = pi/4
 frequency = 10
 phaseOffset = 0
-maxForce = 50
+maxForce = 5000
 # amplitudeFL = pi/4
 # frequencyFL = 10
 # phaseOffsetFL = pi/4
 sleepFreq = 1/600
 g = -9.8
-populationSize = 10
+populationSize = 1
 numberOfGenerations = 100
 
-numSensorNeurons = 11
-numHiddenNeurons = 5
-numMotorNeurons = 10
 
-motorJointRange = 0.5
+numHiddenNeurons = 5
+
+motorJointRange = 0.3
 
 height = 5.2
+
+
+if __name__ == "__main__":
+    import search
+
+
+    search.run_sim()
