@@ -13,9 +13,13 @@ import time
 # print(frontLegSensorValues)
 # plot.plot(frontLegSensorValues, label="Front")
 # plot.legend()
-sinusoid = np.load("data/sinusoid1.npy")
-s = np.load("data/sinusoid2.npy")
-plot.plot(sinusoid)
-plot.plot(s)
+data = np.load("fitnessVals.npy")
+plot.plot(data[:,:,0])
+plot.title("Parent Fitness")
+plot.show()
+plot.figure()
+plot.title("Child Fitness")
+plot.plot(data[:,:,1])
+
 
 plot.show()
