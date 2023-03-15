@@ -26,6 +26,8 @@ Above is one example of a possible brain.
 
 The graph above shows the probability of given mutations.  Worth noting is that I made the probability of any mutations to the body lower, both because I believe that in biological creatures it's harder to change your body than brain, and also because it saves compute time since whenever the body evolves, you have to go back through its generation procedure.
 
+Note that similar to actual evolution, multiple evolutions can happen.  Though this chart shows things as more of a flow, I did that simply so that it is more apparent what the possibilities are.  In actuality, any of these evolutions can happen in a given mutation cycle.
+
 
 ## Selection
 To select for the robots that should be evolved further, we used a parallel hill climber methodology wherein we have some population, which we then clone and mutate, and within each "silo" of parent/child pairs, we select the one with the better fitness (higher x-value in this case) to be the one that continues evolving.
@@ -49,12 +51,12 @@ However, given that I did not have any truly large blocks of time with which my 
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/wbDy_aavwSc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
 
-It's also worth noting that there's no free software I could find that can capture a screen recording on Windows, XBox didn't quite cut it as that requires you to select the window, and the simulation was opening and closing windows.
+It's worth noting that there's no free software I could find that can capture a screen recording on Windows, XBox didn't quite cut it as that requires you to select the window, and the simulation was opening and closing windows.
 
 ## 2-Minute Video
-Unfortunately, README on GitHub doesn't seem to support videos.  So, the video can be found [here]()
+<iframe width="560" height="315" src="https://www.youtube.com/embed/p1p2iBilarY" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
 
-It's also worth noting that there's no free software I could find that can capture a screen recording on Windows, XBox didn't quite cut it as that requires you to select the window, and the simulation was opening and closing windows.
+It's worth noting that there's no free software I could find that can capture a screen recording on Windows, XBox didn't quite cut it as that requires you to select the window, and the simulation was opening and closing windows.
 
 # Citations
 Karl Sim's Paper on evolution in a digital environment, found [here](https://www.karlsims.com/papers/alife94.pdf)
