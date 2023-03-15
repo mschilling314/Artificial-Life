@@ -46,7 +46,8 @@ However, given that I did not have any truly large blocks of time with which my 
 
 
 ## A 10-Second Teaser
-Unfortunately, README on GitHub doesn't seem to support videos.  So, the video can be found [here](https://youtu.be/wbDy_aavwSc)
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/wbDy_aavwSc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
 
 It's also worth noting that there's no free software I could find that can capture a screen recording on Windows, XBox didn't quite cut it as that requires you to select the window, and the simulation was opening and closing windows.
 
