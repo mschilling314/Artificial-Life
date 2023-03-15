@@ -37,6 +37,7 @@ Once you've installed the prerequisites (there are a lot, sorry), you can then d
 Below are two graphs containing parent and child fitness values.
 ![ParentFitness](diagrams/ParentFitness.PNG)
 ![ChildFitness](diagrams/ChildFitness.PNG)
+
 Weirdly, it seems like the parent doesn't increase in fitness monotonically as it should.
 
 Though the professor wanted 50,000 simulations, I was only able to run about 2,500 both because my computer is rather weak (it died multiple times trying to handle the load), I also didn't have much time on my hands as I wound up behind and was unable to catch up until recently (today).  Though, I did calculate that the time to run 50,000 simulations on my computer would be approximately 16 hours and 40 minutes.  Of course, this was with a slightly different configuration than the professor had requested, namely, I was thinking along the lines of a population size of 25 with 2000 generations of evolution, rather than 10 random seeds with 10 as the population size and 500 generations.  Regardless, this came from noticing that it took an hour to run 3,000 simulations, which equates to roughly 0.005 minutes per simulation, which when multiplied by 50,000 gives the projected time.
