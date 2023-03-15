@@ -12,7 +12,7 @@ maxForce = 5000
 # phaseOffsetFL = pi/4
 sleepFreq = 1/600
 g = -9.8
-populationSize = 1
+populationSize = 25
 numberOfGenerations = 100
 
 

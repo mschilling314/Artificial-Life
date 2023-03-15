@@ -3,6 +3,7 @@ import pickle
 import solution
 import constants as c
 import copy
+import numpy as np
 
 
 class PARALLEL_HILL_CLIMBER:
@@ -22,6 +23,7 @@ class PARALLEL_HILL_CLIMBER:
         self.parents = dict()
         self.nextAvailableID = 0
         self.evolveCalled = False
+        self.fitnessVals = np.zeros((c.populationSize, c.numberOfGenerations, 2))
         for i in range(c.populationSize):
             self.parents[i] = solution.SOLUTION(self.nextAvailableID)
             self.nextAvailableID += 1
@@ -35,11 +37,17 @@ class PARALLEL_HILL_CLIMBER:
         """
         self.evolveCalled = True
         self.Evaluate(self.parents)
+
         for currentGeneration in range(c.numberOfGenerations):
             self.Evolve_For_One_Generation()
             if currentGeneration % 25 == 0 or currentGeneration + 1 == c.numberOfGenerations:
                 with open("pickleJar/soln" + str(currentGeneration) + ".pkl", "wb") as f:
                     pickle.dump(self.Show_Best(fitter=lambda p, c: p.fitness > c.fitness, show=False), f)
+            for key in self.parents.keys():
+                self.fitnessVals[key, currentGeneration, 0] = self.parents[key].fitness
+                self.fitnessVals[key, currentGeneration, 1] = self.children[key].fitness
+        
+        np.save("fitnessVals.npy", self.fitnessVals)
 
 
 
@@ -134,3 +142,8 @@ class PARALLEL_HILL_CLIMBER:
             with open("pickleJar/soln" + str(i) + ".pkl", "rb") as f:
                 soln = pickle.load(f)
             soln.Start_Simulation(show="GUI", serial=True)
+
+
+if __name__ == "__main__":
+    phc = PARALLEL_HILL_CLIMBER()
+    phc.showPickleJar()

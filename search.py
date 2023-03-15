@@ -1,4 +1,26 @@
+import os
+import random
+import numpy
 import parallelHillClimber
+import multiprocessing
+
+
+def run_experiment(seed: int):
+    # cmd = "mkdir if not exist seed" + str(seed)
+    # os.system(cmd)
+    # cmd = "cd seed" + str (seed)
+    # os.system(cmd)
+    random.seed(seed)
+    numpy.random.seed(seed)
+    phc = parallelHillClimber.PARALLEL_HILL_CLIMBER()
+    phc.Evolve()
+
+
+def run_experiments():
+    seeds = [0]
+    for seed in seeds:
+        p = multiprocessing.Process(target=run_experiment, args=[seed])
+        p.start()
 
 
 def run_sim():
@@ -21,5 +43,5 @@ def show_pickleJar():
 
 
 if __name__ == "__main__":
-    run_sim()
+    run_experiments()
     
