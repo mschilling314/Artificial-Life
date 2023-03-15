@@ -36,11 +36,20 @@ Below are two graphs containing parent and child fitness values.
 ![ChildFitness](diagrams/ChildFitness.PNG)
 Weirdly, it seems like the parent doesn't increase in fitness monotonically as it should.
 
+Though the professor wanted 50,000 simulations, I was only able to run about 2,500 both because my computer is rather weak (it died multiple times trying to handle the load), I also didn't have much time on my hands as I wound up behind and was unable to catch up until recently (today).  Though, I did calculate that the time to run 50,000 simulations on my computer would be approximately 16 hours and 40 minutes.  Of course, this was with a slightly different configuration than the professor had requested, namely, I was thinking along the lines of a population size of 25 with 2000 generations of evolution, rather than 10 random seeds with 10 as the population size and 500 generations.  Regardless, this came from noticing that it took an hour to run 3,000 simulations, which equates to roughly 0.005 minutes per simulation, which when multiplied by 50,000 gives the projected time.
+
+However, given that I did not have any truly large blocks of time with which my system could run simulations (it can either run simulations or do other things, it's literally not strong enough to do simulations and anything else) since I had to pull so many near all-nighters to do work for other classes as well as try to get this code working, my simulation count obviously fell short.
+
+
 ## A 10-Second Teaser
 Unfortunately, README on GitHub doesn't seem to support videos.  So, the video can be found [here]()
 
+It's also worth noting that there's no free software I could find that can capture a screen recording on Windows, XBox didn't quite cut it as that requires you to select the window, and the simulation was opening and closing windows.
+
 ## 2-Minute Video
 Unfortunately, README on GitHub doesn't seem to support videos.  So, the video can be found [here]()
+
+It's also worth noting that there's no free software I could find that can capture a screen recording on Windows, XBox didn't quite cut it as that requires you to select the window, and the simulation was opening and closing windows.
 
 # Citations
 Karl Sim's Paper on evolution in a digital environment, found [here](https://www.karlsims.com/papers/alife94.pdf)
