@@ -11,7 +11,7 @@ class BODYPLAN:
     sizzles (dict[list[float]]): Provides the size of each type of bodypart.
     """
 
-    
+
     def __init__(self, 
                  adjacencyMatrix: np.array=np.array([[0, 2],
                                                      [0, 1]]),
@@ -78,7 +78,7 @@ class BODYPLAN:
             newWeight = 0
         if newWeight > 4:
             newWeight = 4
-        if (sourceNode not in self.sizzles) or (destNode not in self.sizzles):
+        if (sourceNode >= self.bodyEdgeMatrix.shape[0]) or (destNode >= self.bodyEdgeMatrix.shape[1]):
             # Prevents indexing errors.
             return
         self.bodyEdgeMatrix[sourceNode, destNode] = newWeight
@@ -91,6 +91,6 @@ class BODYPLAN:
         Parameters: 
         node: The node to be "deleted".
         """
-        for i in len(self.sizzles):
+        for i in range(len(self.sizzles)):
             self.modifyEdge(i, node, 0)
             self.modifyEdge(node, i, 0)

@@ -29,6 +29,8 @@ class SOLUTION:
 
     def __init__(self, nextAvailableID: int) -> None:
         self.recursiveLimit = int(random.gauss(2, 0.5))
+        if self.recursiveLimit < 1:
+            self.recursiveLimit = 1
         self.myID = nextAvailableID
         self.joints = []
         self.links = []
@@ -38,7 +40,7 @@ class SOLUTION:
         self.original = True
 
 
-    def Start_Simulation(self, show: str="DIRECT") -> None:
+    def Start_Simulation(self, show: str="DIRECT", serial: bool=False) -> None:
         """
         Creates the world, body, and brain before starting a sim in parallel. 
 
@@ -51,16 +53,17 @@ class SOLUTION:
         """
         if self.myID == 0:
             self.Create_World()
-        # self.links = []
-        # self.joints = []
         if self.original:
             self.Create_Body()
             self.Create_Brain()
         self.Mutate()
         self.writeBodyFile()
         self.writeBrainFile()
-        p = multiprocessing.Process(target=simulate.Simulate, args=[self.links, show, self.myID])
-        p.start()
+        if serial:
+            simulate.Simulate(self.links, "GUI", self.myID)
+        else:
+            p = multiprocessing.Process(target=simulate.Simulate, args=[self.links, show, self.myID])
+            p.start()
 
 
     def Wait_For_Simulation_To_End(self) -> None:
@@ -129,15 +132,17 @@ class SOLUTION:
         # create synapses for a fully-connected layer of sensors and hidden neurons
         for currentRow in range(len(self.links)):
             for currentColumn in range(c.numHiddenNeurons):
-                sensor = currentRow
-                hidden = currentColumn + len(self.links)
-                pyrosim.Send_Synapse(sourceNeuronName=sensor, targetNeuronName=hidden, weight=self.weightsToHidden[currentRow, currentColumn])
+                if currentRow < self.weightsToHidden.shape[0] and currentColumn < self.weightsToHidden.shape[1]:
+                    sensor = currentRow
+                    hidden = currentColumn + len(self.links)
+                    pyrosim.Send_Synapse(sourceNeuronName=sensor, targetNeuronName=hidden, weight=self.weightsToHidden[currentRow, currentColumn])
         # Create synapes for a fully-connected layer of hidden neurons and motors
         for currentRow in range(c.numHiddenNeurons):
             for currentColumn in range(len(self.joints)):
-                hidden = currentRow + len(self.links)
-                motor = currentColumn + c.numHiddenNeurons + len(self.links)
-                pyrosim.Send_Synapse(sourceNeuronName=hidden, targetNeuronName=motor, weight=self.weightsToMotor[currentRow, currentColumn])
+                if currentRow < self.weightsToMotor.shape[0] and currentColumn < self.weightsToMotor.shape[1]:
+                    hidden = currentRow + len(self.links)
+                    motor = currentColumn + c.numHiddenNeurons + len(self.links)
+                    pyrosim.Send_Synapse(sourceNeuronName=hidden, targetNeuronName=motor, weight=self.weightsToMotor[currentRow, currentColumn])
         pyrosim.End()
 
 
@@ -173,9 +178,9 @@ class SOLUTION:
             wO = []
             for i in range(len(self.bodyPlan.sizzles)):
                 if random.random() < 1/len(self.bodyPlan.sizzles):
-                    wIn.append(i, random.randint(0, 4))
+                    wIn.append([i, random.randint(0, 4)])
                 if random.random() < 1/len(self.bodyPlan.sizzles):
-                    wO.append(i, random.randint(0,4))
+                    wO.append([i, random.randint(0,4)])
             s = np.random.random(3).tolist()
             self.bodyPlan.addNode(weightsIn=wIn, weightsOut=wO, size=s)
         if random.random()< 0.2:
@@ -188,6 +193,18 @@ class SOLUTION:
             self.Create_Body()
 
 
+    def pickWeight(self, arr: np.array) -> list[int]:
+        """
+        Picks which weight to modify within the arr.  Ensures bounds compliance.
+        """
+        rowMutated = random.randint(0, len(self.links)-1)
+        columnMutated = random.randint(0, c.numHiddenNeurons-1)
+        while rowMutated >= arr.shape[0] or columnMutated >= arr.shape[1]:
+            rowMutated = random.randint(0, len(self.links)-1)
+            columnMutated = random.randint(0, c.numHiddenNeurons-1)
+        return [rowMutated, columnMutated]
+
+
     def mutateBrain(self) -> None:
         """
         Changes the brain, with 60% independent chance of changing a weight between sensing and hidden or hidden and motor.
@@ -195,12 +212,10 @@ class SOLUTION:
         if len(self.links) == 0:
             return
         if random.random()< 0.6:
-            rowMutated = random.randint(0, len(self.links)-1)
-            columnMutated = random.randint(0, c.numHiddenNeurons-1)
+            rowMutated, columnMutated = self.pickWeight(self.weightsToHidden)
             self.weightsToHidden[rowMutated, columnMutated] = random.random() * 2 - 1
         if random.random()< 0.6:
-            rowMutated = random.randint(0, c.numHiddenNeurons-1)
-            columnMutated = random.randint(0, len(self.joints)-1)
+            rowMutated, columnMutated = self.pickWeight(self.weightsToMotor)
             self.weightsToMotor[rowMutated, columnMutated] = random.random() * 2 - 1
 
 
@@ -229,7 +244,7 @@ class SOLUTION:
         cS:  The color string needed by pyrosim for rendering the link.
         col:  The color itself, similar to cS.
         """
-        existsNeuron = random.random() < 0.7
+        existsNeuron = random.random() < 0.7 or name in self.links
         cS = '<color rgba="0 0 1 1"/>'
         col = 'Blue'
         if existsNeuron:
@@ -252,7 +267,7 @@ class SOLUTION:
         """
         edgeQueue = []
         for i in range(len(self.bodyPlan.bodyEdgeMatrix[node])):
-            for _ in range(self.bodyPlan.bodyEdgeMatrix[node][i]):
+            for _ in range(int(self.bodyPlan.bodyEdgeMatrix[node][i])):
                 edgeQueue.append(i)
         return edgeQueue
 
@@ -379,6 +394,7 @@ class SOLUTION:
         Returns a list of joints and links in the order they should be written to a body file.
         """
         links = set()
+        jointies = set()
         result = []
         js = sorted(self.joints, key=lambda x: (len(x), x))
         for joint in js:
@@ -386,7 +402,9 @@ class SOLUTION:
             if j[0] not in links:
                 result.append(j[0])
                 links.add(j[0])
-            result.append(joint)
+            if joint not in jointies:
+                result.append(joint)
+                jointies.add(joint)
             if j[1] not in links:
                 result.append(j[1])
                 links.add(j[1])

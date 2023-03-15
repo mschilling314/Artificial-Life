@@ -1,7 +1,7 @@
 import numpy as np
 pi = np.pi
 
-iter = 100
+iter = 1000
 coreHeight = 10
 amplitude = pi/4
 frequency = 10
@@ -13,7 +13,7 @@ maxForce = 5000
 sleepFreq = 1/600
 g = -9.8
 populationSize = 1
-numberOfGenerations = 2
+numberOfGenerations = 100
 
 
 numHiddenNeurons = 5
@@ -21,3 +21,10 @@ numHiddenNeurons = 5
 motorJointRange = 0.3
 
 height = 5.2
+
+
+if __name__ == "__main__":
+    import search
+
+
+    search.run_sim()

@@ -1,4 +1,5 @@
 import os
+import pickle
 import solution
 import constants as c
 import copy
@@ -36,6 +37,10 @@ class PARALLEL_HILL_CLIMBER:
         self.Evaluate(self.parents)
         for currentGeneration in range(c.numberOfGenerations):
             self.Evolve_For_One_Generation()
+            if currentGeneration % 25 == 0 or currentGeneration + 1 == c.numberOfGenerations:
+                with open("pickleJar/soln" + str(currentGeneration) + ".pkl", "wb") as f:
+                    pickle.dump(self.Show_Best(fitter=lambda p, c: p.fitness > c.fitness, show=False), f)
+
 
 
     def Evolve_For_One_Generation(self) -> None:
@@ -57,7 +62,7 @@ class PARALLEL_HILL_CLIMBER:
         solutions:  A dictionary where the values are the solutions to be simulated.
         """
         for solution in solutions.values():
-            solution.Start_Simulation(show="GUI")
+            solution.Start_Simulation(show="DIRECT")
         for solution in solutions.values():
             solution.Wait_For_Simulation_To_End()
 
@@ -85,7 +90,7 @@ class PARALLEL_HILL_CLIMBER:
             self.nextAvailableID += 1
 
 
-    def Show_Best(self, fitter) -> None:
+    def Show_Best(self, fitter, show=True) -> solution.SOLUTION:
         """
         Determines the fittest of the parallel "silos" and displays it.
 
@@ -97,7 +102,9 @@ class PARALLEL_HILL_CLIMBER:
             for parent in self.parents.values():
                 if fitter(parent, best):
                     best = parent
-        best.Start_Simulation(show="GUI")
+        if show:
+            best.Start_Simulation(show="GUI")
+        return best
 
 
     def Mutate(self) -> None:
@@ -120,3 +127,10 @@ class PARALLEL_HILL_CLIMBER:
             child = self.children[key]
             if fitter(parent, child):
                 self.parents[key] = child
+
+
+    def showPickleJar(self):
+        for i in range(0, c.numberOfGenerations, 25):
+            with open("pickleJar/soln" + str(i) + ".pkl", "rb") as f:
+                soln = pickle.load(f)
+            soln.Start_Simulation(show="GUI", serial=True)
